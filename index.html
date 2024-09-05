@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Editor with Monaco</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <h1>Python Editor with Monaco</h1>
+    <div id="editor" style="width: 800px; height: 600px; border: 1px solid #ccc;"></div>
+
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            // Define custom tokens for your Python library
+            monaco.languages.registerCompletionItemProvider('python', {
+                provideCompletionItems: function(model, position) {
+                    var suggestions = [
+                        {
+                            label: 'your_library',
+                            kind: monaco.languages.CompletionItemKind.Module,
+                            insertText: 'your_library'
+                        },
+                        {
+                            label: 'your_library.function1',
+                            kind: monaco.languages.CompletionItemKind.Function,
+                            insertText: 'function1(${1:param1})',
+                            insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        },
+                        // Add more functions, classes, etc. from your library
+                    ];
+                    return { suggestions: suggestions };
+                }
+            });
+
+            // Create the editor
+            var editor = monaco.editor.create(document.getElementById('editor'), {
+                value: [
+                    'import your_library',
+                    '',
+                    'def hello_world():',
+                    '    your_library.function1("Hello, World!")',
+                    '',
+                    'hello_world()'
+                ].join('\n'),
+                language: 'python',
+                theme: 'vs-light'
+            });
+
+            // Add event listener for content changes
+            editor.onDidChangeModelContent(function(e) {
+                console.log('Content changed:', e);
+                // You can access the current content of the editor like this:
+                var content = editor.getValue();
+                console.log('Current content:', content);
+            });
+        });
+    </script>
+</body>
+</html>
